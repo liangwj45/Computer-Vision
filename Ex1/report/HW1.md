@@ -10,12 +10,18 @@
 CImg<unsigned char> img("./1.bmp");
 ```
 
-然后调用display方法即可展示图像：
+然后调用display方法即可：
 
 ```c++
-// 1. 展示图像
-static void step1(CImg<unsigned char>& img) {
-    img.display();
+/**
+ * @brief 展示一张图像
+ *
+ * @param title 图像标题
+ * @return const MyCImg& 返回当前对象
+ */
+const MyCImg& display(const char* const title = 0) const {
+  img.display(title);
+  return *this;
 }
 ```
 
@@ -26,21 +32,34 @@ static void step1(CImg<unsigned char>& img) {
 使用CImg库里的cimg_forXY遍历一遍整个图像，判断每个像素的RGB的值并执行相应的操作即可：
 
 ```c++
-// 2. 把图像中白色区域变成红色，黑色区域变成绿色
-static void step2(CImg<unsigned char>& img) {
-    cimg_forXY(img, x, y) {
-        if (img(x, y, 0) == 255 && img(x, y, 1) == 255 && img(x, y, 2) == 255) {
-            // 填充为红色
-            img(x, y, 0) = 255;
-            img(x, y, 1) = 0;
-            img(x, y, 2) = 0;
-        } else if (img(x, y, 0) == 0 && img(x, y, 1) == 0 && img(x, y, 2) == 0) {
-            // 填充为绿色
-            img(x, y, 0) = 0;
-            img(x, y, 1) = 255;
-            img(x, y, 2) = 0;
-        }
+/**
+ * @brief 更换图像颜色
+ *
+ * @param from 需要更换的颜色
+ * @param to 更换成的颜色
+ * @return MyCImg& 返回当前对象
+ */
+MyCImg& changeColor(const unsigned char* const from,
+                    const unsigned char* const to) {
+  cimg_forXY(img, x, y) {
+    if (img(x, y, 0) == from[0] && img(x, y, 1) == from[1] &&
+        img(x, y, 2) == from[2]) {
+      img(x, y, 0) = to[0];
+      img(x, y, 1) = to[1];
+      img(x, y, 2) = to[2];
     }
+  }
+  return *this;
+}
+
+static const unsigned char white[3] = {255, 255, 255};
+static const unsigned char black[3] = {0, 0, 0};
+static const unsigned char red[3] = {255, 0, 0};
+static const unsigned char green[3] = {0, 255, 0};
+
+void test2() {
+  myCImg.changeColor(white, red).changeColor(black, green);
+  myCImg.save("./step2.bmp");
 }
 ```
 
@@ -48,30 +67,7 @@ static void step2(CImg<unsigned char>& img) {
 
 ![](./img/step2-1.bmp)
 
-上图可见边界处理得不是很好，调整下参数：
-
-```c++
-// 2. 把图像中白色区域变成红色，黑色区域变成绿色
-static void step2(CImg<unsigned char>& img) {
-    cimg_forXY(img, x, y) {
-        // 调整参数使边界保持完整
-        // if (img(x, y, 0) == 255 && img(x, y, 1) == 255 && img(x, y, 2) == 255) {
-        if (img(x, y, 0) == 120 && img(x, y, 1) == 120 && img(x, y, 2) == 120) {
-            // 填充为红色
-            img(x, y, 0) = 255;
-            img(x, y, 1) = 0;
-            img(x, y, 2) = 0;
-        } else if (img(x, y, 0) == 0 && img(x, y, 1) == 0 && img(x, y, 2) == 0) {
-            // 填充为绿色
-            img(x, y, 0) = 0;
-            img(x, y, 1) = 255;
-            img(x, y, 2) = 0;
-        }
-    }
-}
-```
-
-得到下图结果：
+上图可见边界处理得不是很好，可以通过调整颜色的参数，得到下图结果：
 
 ![](./img/step2-2.bmp)
 
@@ -80,83 +76,190 @@ static void step2(CImg<unsigned char>& img) {
 可以使用线性规划的方法来确定三角形的区域，底边为x轴，并分别求出两条腰的方程，最后进行坐标变换即可：
 
 ```c++
-// 定义根号3，等边三角形两条边的方程以及距离公式
-#define sqrt3 sqrt(3.0)
-#define f1(x) (sqrt3 * x + 20 * sqrt3)
-#define f2(x) (-sqrt3 * x + 20 * sqrt3)
-#define dis(x, y, x0, y0) (sqrt(pow((x) - (x0), 2) + pow((y) - (y0), 2)))
-
-// 3. 在图上绘制一个等边三角形区域，其中心坐标(50,50)，边长为 40，填充颜色为蓝色。
-static void step3(CImg<unsigned char>& img) {
-    cimg_forXY(img, x, y) {
-        // 进行坐标变换
-        double xx = (double)x - 50.0;
-        double yy = (double)y - 50.0 + 20.0 * sqrt3 / 3.0;
-        // 利用线性规划来划分出等边三角形区域
-        if (xx >= -20 && xx <= 20 && yy >= 0 && yy <= f1(xx) && yy <= f2(xx)) {
-            // 填充为蓝色
-            img(x, y, 0) = 0;
-            img(x, y, 1) = 0;
-            img(x, y, 2) = 255;
-        }
+/**
+ * @brief 画等边三角形
+ *
+ * @param x0 三角形中心的 x 坐标
+ * @param y0 三角形中心的 y 坐标
+ * @param length 三角形边长
+ * @param color 填充的颜色
+ * @return MyCImg& 返回当前对象
+ */
+MyCImg& drawRegularTriangle(const int x0, const int y0, const int length,
+                            const unsigned char* const color) {
+  cimg_forXY(img, x, y) {
+    // 进行坐标变换
+    double xx = (double)x - (double)x0;
+    double yy = (double)y - (double)y0 + 20.0 * sqrt3 / 3.0;
+    double half = (double)length / 2.0;
+    // 利用线性规划来划分出等边三角形区域
+    if (xx >= -half && xx <= half && yy >= 0 && yy <= f1(xx) &&
+        yy <= f2(xx)) {
+      img(x, y, 0) = color[0];
+      img(x, y, 1) = color[1];
+      img(x, y, 2) = color[2];
     }
+  }
+  return *this;
+}
+
+void test3() {
+  // 调用自己实现的方法
+  CImg<unsigned char> img(200, 200, 1, 3);
+  MyCImg myCImg(img);
+  myCImg.drawRegularTriangle(50, 50, 40, blue);
+  myCImg.save("./step3-myCImg.bmp");
+
+  // 调用CImg库中的draw_triangle方法
+  CImg<unsigned char> img2(200, 200, 1, 3);
+  const int x0 = 30;
+  const int y0 = 50 - (int)(20 * sqrt(3) / 3.0);
+  const int x1 = 70;
+  const int y1 = y0;
+  const int x2 = 50;
+  const int y2 = 50 + (int)(20 * sqrt(3) / 3.0 * 2);
+  img2.draw_triangle(x0, y0, x1, y1, x2, y2, blue);
+  img2.save("./step3-CImg.bmp");
 }
 ```
 
-得到下图结果：
+两种方法分别得到下图结果：
 
-![](./img/step3.bmp)
+MyCImg：
+
+![](./img/step3-MyCImg.bmp)
+
+CImg：
+
+![](./img/step3-CImg.bmp)
 
 ### 4. 在图上绘制一个圆形区域，圆心坐标(50,50)，半径为 15，填充颜色为黄色。
 
 确定圆心和半径，判断点到圆心的距离是否大于半径即可：
 
 ```c++
-// 4. 在图上绘制一个圆形区域，圆心坐标(50,50)，半径为 15，填充颜色为黄色。
-static void step4(CImg<unsigned char>& img) {
-    cimg_forXY(img, x, y) {
-        if (dis(x, y, 50, 50) <= 15) {
-            img(x, y, 0) = 255;
-            img(x, y, 1) = 255;
-            img(x, y, 2) = 0;
-        }
+/**
+ * @brief 画圆形
+ *
+ * @param x0 圆心的 x 坐标
+ * @param y0 圆心的 y 坐标
+ * @param radius 圆的半径
+ * @param color 填充的颜色
+ * @return MyCImg& 返回当前对象
+ */
+MyCImg& drawCircle(const int x0, const int y0, const int radius,
+                    const unsigned char* const color) {
+  cimg_forXY(img, x, y) {
+    double distance = sqrt(pow(x - x0, 2) + pow(y - y0, 2));
+    if (distance <= radius) {
+      img(x, y, 0) = color[0];
+      img(x, y, 1) = color[1];
+      img(x, y, 2) = color[2];
     }
+  }
+  return *this;
+}
+
+static const unsigned char yellow[3] = {255, 255, 0};
+
+void test4() {
+  // 调用自己实现的方法
+  CImg<unsigned char> img(200, 200, 1, 3);
+  MyCImg myCImg(img);
+  myCImg.drawCircle(50, 50, 15, yellow);
+  myCImg.save("./step4-myCImg.bmp");
+
+  // 调用CImg库中的draw_circle方法
+  CImg<unsigned char> img2(200, 200, 1, 3);
+  img2.draw_circle(50, 50, 15, yellow);
+  img2.save("./step4-CImg.bmp");
 }
 ```
 
-得到下图结果：
+两种方法分别得到下图结果：
 
-![](./img/step4.bmp)
+MyCImg：
+
+![](./img/step4-MyCImg.bmp)
+
+CImg：
+
+![](./img/step4-CImg.bmp)
 
 ### 5. 在图上绘制一条长为 100 的直线段，起点坐标为(0, 0)，方向角为 135 度，直线的颜色为绿色。
 
 题意理解为从左上角引一条 45 度角长度为 100 的直线段出来，即令 x 等于 y 即可：
 
 ```c++
-// 5. 在图上绘制一条长为 100 的直线段，起点坐标为(0, 0)，方向角为 135 度，直线的颜色为绿色。
-static void step5(CImg<unsigned char>& img) {
-    cimg_forXY(img, x, y) {
-        if (x == y && dis(x, y, 0, 0) <= 100) {
-            img(x, y, 0) = 0;
-            img(x, y, 1) = 255;
-            img(x, y, 2) = 0;
-        }
+/**
+ * @brief 画线段
+ *
+ * @param x0 线段起点的 x 坐标
+ * @param y0 线段起点的 y 坐标
+ * @param tan 线段与 x 轴形成的角度的正切值
+ * @param length 线段的长度
+ * @param color 线段的颜色
+ * @return MyCImg& 返回当前对象
+ */
+MyCImg& drawLine(const int x0, const int y0, const double tan,
+                  const int length, const unsigned char* const color) {
+  cimg_forXY(img, x, y) {
+    double distance = sqrt(pow(x - x0, 2) + pow(y - y0, 2));
+    if (y == x * tan && distance <= length) {
+      img(x, y, 0) = color[0];
+      img(x, y, 1) = color[1];
+      img(x, y, 2) = color[2];
     }
+  }
+  return *this;
+}
+
+void test5() {
+  // 调用自己实现的方法
+  CImg<unsigned char> img(200, 200, 1, 3);
+  MyCImg myCImg(img);
+  myCImg.drawLine(0, 0, 1.0, 100, green);
+  myCImg.save("./step5-myCImg.bmp");
+
+  // 调用CImg库中的draw_line方法
+  CImg<unsigned char> img2(200, 200, 1, 3);
+  img2.draw_line(0, 0, 100 * cos(45 * pi / 180), 100 * sin(45 * pi / 180),
+                  green);
+  img2.save("./step5-CImg.bmp");
 }
 ```
 
-得到下图结果：
+两种方法分别得到下图结果：
 
-![](./img/step5.bmp)
+MyCImg：
+
+![](./img/step5-MyCImg.bmp)
+
+CImg：
+
+![](./img/step5-CImg.bmp)
 
 ### 6. 保存操作结果。
 
 确保之前几步操作均在同一个对象中操作，然后调用 img.save() 方法即可：
 
 ```c++
-// 6. 保存操作结果。
-static void step6(CImg<unsigned char>& img) {
-    img.save("./2.bmp");
+/**
+ * @brief 保存图像
+ *
+ * @param filename 保存的文件名
+ * @return const MyCImg& 返回当前对象
+ */
+const MyCImg& save(const char* const filename) const {
+  img.save(filename);
+  return *this;
+}
+
+void test6() {
+  myCImg.drawRegularTriangle(50, 50, 40, blue);
+  myCImg.drawCircle(50, 50, 15, yellow);
+  myCImg.drawLine(0, 0, 1.0, 100, green);
+  myCImg.save("./step6.bmp");
 }
 ```
 
@@ -164,73 +267,9 @@ static void step6(CImg<unsigned char>& img) {
 
 ![](./img/step6.bmp)
 
-### 测试代码
+### 思考：为什么第四步绘制的圆形区域形状效果不好。
 
-```c++
-#include <iostream>
-#include "CImg.h"
-#include "HW1.hpp"
-using namespace cimg_library;
+圆的尺寸太小，导致得不到较高的分辨率，边界比较不圆润。如增大圆的半径，效果就会更好。如下图半径50的圆：
 
-class Test {
-public:
-	Test(CImg<unsigned char>& img) : img(img) {}
-
-	void test1() {
-		HW1::step1(img);
-		img.save("./step1.bmp");
-	}
-
-	void test2() {
-		CImg<unsigned char> img(this->img);
-		HW1::step2(img);
-		img.save("./step2.bmp");
-	}
-
-	void test3() {
-		CImg<unsigned char> img(200, 200, 1, 3);;
-		HW1::step3(img);
-		img.save("./step3.bmp");
-	}
-
-	void test4() {
-		CImg<unsigned char> img(200, 200, 1, 3);;
-		HW1::step4(img);
-		img.save("./step4.bmp");
-	}
-
-	void test5() {
-		CImg<unsigned char> img(200, 200, 1, 3);;
-		HW1::step5(img);
-		img.save("./step5.bmp");
-	}
-
-	void test6() {
-		HW1::step2(img);
-		HW1::step3(img);
-		HW1::step4(img);
-		HW1::step5(img);
-		HW1::step6(img);
-		img.save("./step6.bmp");
-	}
-
-	void runAll() {
-		test1();
-		test2();
-		test3();
-		test4();
-		test5();
-		test6();
-	}
-
-private:
-	CImg<unsigned char>& img;
-};
-
-int main() {
-  CImg<unsigned char> img("./1.bmp");
-  Test test(img);
-  test.runAll();
-}
-```
+![](./img/circle.bmp)
 

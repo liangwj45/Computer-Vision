@@ -23,7 +23,7 @@
     <ClInclude Include="CImg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="HW1.hpp">
+    <ClInclude Include="MyCImg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
