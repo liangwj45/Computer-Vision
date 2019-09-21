@@ -59,7 +59,7 @@ class Canny {
 
 ### 编写源文件
 
-### 主要编写构造和析构函数，以及连接删除边和保存图片相关的代码，其他部分代码与 `canny_source.c` 中的基本相同，由于篇幅过大，那部分代码就不放出来了。
+主要编写构造和析构函数，以及连接删除边和保存图片相关的代码，其他部分代码与 `canny_source.c` 中的基本相同，由于篇幅过大，那部分代码就不放出来了。
 
 ```c++
 #include "canny.h"
@@ -310,7 +310,7 @@ int main() {
 
   > 低阈值减小时，会增加噪声；低阈值增大时，会丢失强边缘像素。
 
-- `thig` ：High hysteresis threshold control. The actual is the (100 * thigh) percentage point the histogram of the magnitude of the image that passes non-maximal.
+- `thig` ：High hysteresis threshold control. The actual is the (100 \* thigh) percentage point the histogram of the magnitude of the image that passes non-maximal.
 
   > 高阈值减小时，会增加强边缘像素；高阈值增大时，强边缘像素部分会转化为弱边缘像素，丢失部分边缘像素点。
 
