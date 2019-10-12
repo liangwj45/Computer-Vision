@@ -16,80 +16,80 @@ Part1先对图像做边缘检测，求出边缘图像的霍夫空间，然后投
 
 图1：
 
-![1](.\img\part1\src\1.bmp)
+![1](./img/part1/src/1.bmp)
 
 图2：
 
-![2](.\img\part1\src\2.bmp)
+![2](./img/part1/src/2.bmp)
 
 图3：
 
-![3](.\img\part1\src\3.bmp)
+![3](./img/part1/src/3.bmp)
 
 图4：
 
-![4](.\img\part1\src\4.bmp)
+![4](./img/part1/src/4.bmp)
 
 图5：
 
-![5](.\img\part1\src\5.bmp)
+![5](./img/part1/src/5.bmp)
 
 图6：
 
-![6](.\img\part1\src\6.bmp)
+![6](./img/part1/src/6.bmp)
 
 
 ### 边缘检测
 
 图1：
 
-![01-edge_detect-1](.\img\part1\01-edge_detect-1.bmp)
+![01-edge_detect-1](./img/part1/01-edge_detect-1.bmp)
 
 图2：
 
-![01-edge_detect-2](.\img\part1\01-edge_detect-2.bmp)
+![01-edge_detect-2](./img/part1/01-edge_detect-2.bmp)
 
 图3：
 
-![01-edge_detect-3](.\img\part1\01-edge_detect-3.bmp)
+![01-edge_detect-3](./img/part1/01-edge_detect-3.bmp)
 
 图4：
 
-![01-edge_detect-4](.\img\part1\01-edge_detect-4.bmp)
+![01-edge_detect-4](./img/part1/01-edge_detect-4.bmp)
 
 图5：
 
-![01-edge_detect-5](.\img\part1\01-edge_detect-5.bmp)
+![01-edge_detect-5](./img/part1/01-edge_detect-5.bmp)
 
 图6：
 
-![01-edge_detect-6](.\img\part1\01-edge_detect-6.bmp)
+![01-edge_detect-6](./img/part1/01-edge_detect-6.bmp)
 
 ### 霍夫空间
 
 图1：
 
-![02-hough_space-1](.\img\part1\02-hough_space-1.bmp)
+![02-hough_space-1](./img/part1/02-hough_space-1.bmp)
 
 图2：
 
-![02-hough_space-2](.\img\part1\02-hough_space-2.bmp)
+![02-hough_space-2](./img/part1/02-hough_space-2.bmp)
 
 图3：
 
-![02-hough_space-3](.\img\part1\02-hough_space-3.bmp)
+![02-hough_space-3](./img/part1/02-hough_space-3.bmp)
 
 图4：
 
-![02-hough_space-4](.\img\part1\02-hough_space-4.bmp)
+![02-hough_space-4](./img/part1/02-hough_space-4.bmp)
 
 图5：
 
-![02-hough_space-5](.\img\part1\02-hough_space-5.bmp)
+![02-hough_space-5](./img/part1/02-hough_space-5.bmp)
 
 图6：
 
-![02-hough_space-6](.\img\part1\02-hough_space-6.bmp)
+![02-hough_space-6](./img/part1/02-hough_space-6.bmp)
 
 ### 直线方程
 
@@ -151,27 +151,27 @@ line 4: 94 = 0.0697565x + 0.997564y
 
 图1：
 
-![04-lines-1](.\img\part1\04-lines-1.bmp)
+![04-lines-1](./img/part1/04-lines-1.bmp)
 
 图2：
 
-![04-lines-2](.\img\part1\04-lines-2.bmp)
+![04-lines-2](./img/part1/04-lines-2.bmp)
 
 图3：
 
-![04-lines-3](.\img\part1\04-lines-3.bmp)
+![04-lines-3](./img/part1/04-lines-3.bmp)
 
 图4：
 
-![04-lines-4](.\img\part1\04-lines-4.bmp)
+![04-lines-4](./img/part1/04-lines-4.bmp)
 
 图5：
 
-![04-lines-5](.\img\part1\04-lines-5.bmp)
+![04-lines-5](./img/part1/04-lines-5.bmp)
 
 图6：
 
-![04-lines-6](.\img\part1\04-lines-6.bmp)
+![04-lines-6](./img/part1/04-lines-6.bmp)
 
 ## Part2 圆形检测
 
@@ -183,153 +183,153 @@ line 4: 94 = 0.0697565x + 0.997564y
 
 图1：
 
-![1](.\img\part2\src\1.bmp)
+![1](./img/part2/src/1.bmp)
 
 图2：
 
-![2](.\img\part2\src\2.bmp)
+![2](./img/part2/src/2.bmp)
 
 图3：
 
-![3](.\img\part2\src\3.bmp)
+![3](./img/part2/src/3.bmp)
 
 图4：
 
-![4](.\img\part2\src\4.bmp)
+![4](./img/part2/src/4.bmp)
 
 图5：
 
-![5](.\img\part2\src\5.bmp)
+![5](./img/part2/src/5.bmp)
 
 图6：
 
-![6](.\img\part2\src\6.bmp)
+![6](./img/part2/src/6.bmp)
 
 图7：
 
-![7](.\img\part2\src\7.bmp)
+![7](./img/part2/src/7.bmp)
 
 图8：
 
-![8](.\img\part2\src\8.bmp)
+![8](./img/part2/src/8.bmp)
 
 图9：
 
-![9](.\img\part2\src\9.bmp)
+![9](./img/part2/src/9.bmp)
 
 ### 边缘检测
 
 图1：
 
-![01-edge_detect-1](.\img\part2\实心圆\01-edge_detect-1.bmp)
+![01-edge_detect-1](./img/part2/实心圆/01-edge_detect-1.bmp)
 
 图2：
 
-![01-edge_detect-2](.\img\part2\实心圆\01-edge_detect-2.bmp)
+![01-edge_detect-2](./img/part2/实心圆/01-edge_detect-2.bmp)
 
 图3：
 
-![01-edge_detect-3](.\img\part2\实心圆\01-edge_detect-3.bmp)
+![01-edge_detect-3](./img/part2/实心圆/01-edge_detect-3.bmp)
 
 图4：
 
-![01-edge_detect-4](.\img\part2\实心圆\01-edge_detect-4.bmp)
+![01-edge_detect-4](./img/part2/实心圆/01-edge_detect-4.bmp)
 
 图5：
 
-![01-edge_detect-5](.\img\part2\实心圆\01-edge_detect-5.bmp)
+![01-edge_detect-5](./img/part2/实心圆/01-edge_detect-5.bmp)
 
 图6：
 
-![01-edge_detect-6](.\img\part2\实心圆\01-edge_detect-6.bmp)
+![01-edge_detect-6](./img/part2/实心圆/01-edge_detect-6.bmp)
 
 图7：
 
-![01-edge_detect-7](.\img\part2\实心圆\01-edge_detect-7.bmp)
+![01-edge_detect-7](./img/part2/实心圆/01-edge_detect-7.bmp)
 
 图8：
 
-![01-edge_detect-8](.\img\part2\实心圆\01-edge_detect-8.bmp)
+![01-edge_detect-8](./img/part2/实心圆/01-edge_detect-8.bmp)
 
 图9：
 
-![01-edge_detect-9](.\img\part2\实心圆\01-edge_detect-9.bmp)
+![01-edge_detect-9](./img/part2/实心圆/01-edge_detect-9.bmp)
 
 ### 圆形检测（实心）
 
 图1：
 
-![02-draw_circles-1](.\img\part2\实心圆\02-draw_circles-1.bmp)
+![02-draw_circles-1](./img/part2/实心圆/02-draw_circles-1.bmp)
 
 图2：
 
-![02-draw_circles-2](.\img\part2\实心圆\02-draw_circles-2.bmp)
+![02-draw_circles-2](./img/part2/实心圆/02-draw_circles-2.bmp)
 
 图3：
 
-![02-draw_circles-3](.\img\part2\实心圆\02-draw_circles-3.bmp)
+![02-draw_circles-3](./img/part2/实心圆/02-draw_circles-3.bmp)
 
 图4：
 
-![02-draw_circles-4](.\img\part2\实心圆\02-draw_circles-4.bmp)
+![02-draw_circles-4](./img/part2/实心圆/02-draw_circles-4.bmp)
 
 图5：
 
-![02-draw_circles-5](.\img\part2\实心圆\02-draw_circles-5.bmp)
+![02-draw_circles-5](./img/part2/实心圆/02-draw_circles-5.bmp)
 
 图6：
 
-![02-draw_circles-6](.\img\part2\实心圆\02-draw_circles-6.bmp)
+![02-draw_circles-6](./img/part2/实心圆/02-draw_circles-6.bmp)
 
 图7：
 
-![02-draw_circles-7](.\img\part2\实心圆\02-draw_circles-7.bmp)
+![02-draw_circles-7](./img/part2/实心圆/02-draw_circles-7.bmp)
 
 图8：
 
-![02-draw_circles-8](.\img\part2\实心圆\02-draw_circles-8.bmp)
+![02-draw_circles-8](./img/part2/实心圆/02-draw_circles-8.bmp)
 
 图9：
 
-![02-draw_circles-9](.\img\part2\实心圆\02-draw_circles-9.bmp)
+![02-draw_circles-9](./img/part2/实心圆/02-draw_circles-9.bmp)
 
 ### 圆形检测（空心）
 
 图1：
 
-![02-draw_circles-1](.\img\part2\02-draw_circles-1.bmp)
+![02-draw_circles-1](./img/part2/02-draw_circles-1.bmp)
 
 图2：
 
-![02-draw_circles-2](.\img\part2\02-draw_circles-2.bmp)
+![02-draw_circles-2](./img/part2/02-draw_circles-2.bmp)
 
 图3：
 
-![02-draw_circles-3](.\img\part2\02-draw_circles-3.bmp)
+![02-draw_circles-3](./img/part2/02-draw_circles-3.bmp)
 
 图4：
 
-![02-draw_circles-4](.\img\part2\02-draw_circles-4.bmp)
+![02-draw_circles-4](./img/part2/02-draw_circles-4.bmp)
 
 图5：
 
-![02-draw_circles-5](.\img\part2\02-draw_circles-5.bmp)
+![02-draw_circles-5](./img/part2/02-draw_circles-5.bmp)
 
 图6：
 
-![02-draw_circles-6](.\img\part2\02-draw_circles-6.bmp)
+![02-draw_circles-6](./img/part2/02-draw_circles-6.bmp)
 
 图7：
 
-![02-draw_circles-7](.\img\part2\02-draw_circles-7.bmp)
+![02-draw_circles-7](./img/part2/02-draw_circles-7.bmp)
 
 图8：
 
-![02-draw_circles-8](.\img\part2\02-draw_circles-8.bmp)
+![02-draw_circles-8](./img/part2/02-draw_circles-8.bmp)
 
 图9：
 
-![02-draw_circles-9](.\img\part2\02-draw_circles-9.bmp)
+![02-draw_circles-9](./img/part2/02-draw_circles-9.bmp)
 
 ## Part3 名片检测
 
