@@ -2,3 +2,4 @@
 Debug/
 .vscode/
 *.exe
+tmp/

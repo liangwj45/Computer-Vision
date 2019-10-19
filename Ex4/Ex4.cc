@@ -1,6 +1,7 @@
 ﻿#include "Ex4.h"
 #include <list>
 #include <queue>
+#include <algorithm>
 using std::list;
 using std::queue;
 #include <iostream>
@@ -8,33 +9,44 @@ using std::cout;
 using std::endl;
 
 int Ex4::dir[8][2] = { -1,0,1,0,0,-1,0,1,-1,-1,-1,1,1,-1,1,1 };
+unsigned char Ex4::red[3] = { 255, 0, 0 };
+unsigned char Ex4::blue[3] = { 0, 0, 255 };
 
 Ex4::Ex4(string path) {
 	img = CImg<unsigned char>(path.c_str());
+	src = img;
 	width = img._width, height = img._height;
 	vis.resize(width, height);
 }
 
 void Ex4::test() {
 	Erosion(img, img, 3);
-	img.save("./img/2.bmp");
-	EliminateConnection(300);
-	img.save("./img/5.bmp");
-	return;
+	img.save("./img/2-erosion.bmp");
+	EliminateConnection(300, 80);
+	img.save("./img/3-eliminate_connection.bmp");
+	src.save("./img/4-draw_frame.bmp");
 }
 
-void Ex4::EliminateConnection(int tcon) {
+void Ex4::EliminateConnection(int tcon, int tnum) {
 	cout << "EliminateConnection" << endl;
 	cimg_forXY(vis, i, j) {
 		vis(i, j) = 0;
 	}
 	cimg_forXY(img, i, j) {
 		if (!img(i, j) && !vis(i, j)) {
-			cnt = 1;
+			cnt = 1, lx = rx = i, ly = ry = j;
 			con.clear();
 			FindConnection(i, j);
 			if (cnt > tcon) {
 				DeleteConnection();
+			}
+			else if (cnt > tnum) {
+				int side = 2;
+				lx -= side, ly -= side, rx += side, ry += side;
+				src.draw_line(lx, ly, rx, ly, red);
+				src.draw_line(lx, ly, lx, ry, red);
+				src.draw_line(rx, ly, rx, ry, red);
+				src.draw_line(lx, ry, rx, ry, red);
 			}
 		}
 	}
@@ -42,6 +54,10 @@ void Ex4::EliminateConnection(int tcon) {
 
 void Ex4::FindConnection(int x, int y) {
 	con.push_back(Point({ x, y }));
+	lx = std::min(lx, x);
+	ly = std::min(ly, y);
+	rx = std::max(rx, x);
+	ry = std::max(ry, y);
 	vis(x, y) = 1;
 	for (int i = 0; i < 8; i++) {
 		int xx = dir[i][0] + x;
