@@ -1,22 +1,21 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include "Identify.h"
 
-Identify::Identify(bool has_image)
+Identify::Identify(bool has_model)
     : training_vectors(num_images * 20, img_size, CV_32F),
       training_labels(num_images * 20, 1, CV_32F)
 #if Debug
       ,
-      testing_images(num_test, img_size, CV_32FC1),
+      testing_images(num_test, img_size, CV_32F),
       testing_result(num_test, 1, CV_32F)
 #endif
 {
-  if (has_image) {
-    LoadImagesAndLabels();
-  } else {
-    ImportTrainingImages();
-  }
   knn = ml::KNearest::create();
-  DoTraining();
+  if (has_model) {
+    ImportTrainingModel();
+  } else {
+    LoadDataAndDoTraining();
+  }
 
 #if Debug
   ImportTestingImages();
@@ -28,35 +27,27 @@ void Identify::Predict(Mat& test, Mat& result) {
   knn->findNearest(test, K, result);
 }
 
-float Identify::Predict(Mat& test) {
+float Identify::Predict(string path) {
   Mat result(1, 1, CV_32F);
-  knn->findNearest(test, K, result);
-  return result.at<float>(0, 0);
-}
-
-void Identify::ImportTrainingImages() {
-  ofstream image("training.images");
-  ofstream label("training.labels");
-  for (int i = 0; i <= 19; i++) {
-    for (int j = 0; j < num_images; j++) {
-      char buf[1024];
-      sprintf(buf, "num/tmp/%d/%d.png", i, j);
-      Mat img = imread(buf, IMREAD_GRAYSCALE);
-      img.convertTo(img, CV_32F);
-      resize(img, img, Size(num_rows, num_cols));
-      int index = i * num_images + j;
-      for (int k = 0; k < img_size; k++) {
-        training_vectors.at<float>(index, k) =
-            img.at<float>(k / num_cols, k % num_cols);
-        image << training_vectors.at<float>(index, k) << std::endl;
-      }
-      training_labels.at<float>(index, 0) = i;
-      label << i << std::endl;
-    }
+  Mat test(1, img_size, CV_32F);
+  Mat img = imread(path, IMREAD_GRAYSCALE);
+  img.convertTo(img, CV_32F);
+  resize(img, img, Size(num_rows, num_cols));
+  for (int i = 0; i < img_size; i++) {
+    test.at<float>(0, i) = img.at<float>(i / num_cols, i % num_cols);
   }
+  knn->findNearest(test, K, result);
+  return (int)result.at<float>(0, 0);
 }
 
-void Identify::LoadImagesAndLabels() {
+float Identify::Predict(CImg<unsigned char>& img) {
+  img.resize(num_rows, num_cols, 1, 1);
+  img.save("tmp_image_for_predict.bmp");
+  return Predict("tmp_image_for_predict.bmp");
+}
+
+void Identify::ImportTrainingModel() {
+  // knn = Algorithm::load<ml::KNearest>("identify.model");
   ifstream image("training.images");
   ifstream label("training.labels");
   float n;
@@ -71,13 +62,37 @@ void Identify::LoadImagesAndLabels() {
       training_labels.at<float>(index, 0) = n;
     }
   }
-}
-
-void Identify::DoTraining() {
   knn->setDefaultK(K);
   knn->setIsClassifier(true);
   knn->setAlgorithmType(ml::KNearest::BRUTE_FORCE);
   knn->train(training_vectors, ml::ROW_SAMPLE, training_labels);
+}
+
+void Identify::LoadDataAndDoTraining() {
+  ofstream image("training.images");
+  ofstream label("training.labels");
+  for (int i = 0; i <= 19; i++) {
+    for (int j = 0; j < num_images; j++) {
+      char buf[1024];
+      sprintf(buf, "dataset/%d/%d.png", i, j);
+      Mat img = imread(buf, IMREAD_GRAYSCALE);
+      img.convertTo(img, CV_32F);
+      resize(img, img, Size(num_rows, num_cols));
+      int index = i * num_images + j;
+      for (int k = 0; k < img_size; k++) {
+        training_vectors.at<float>(index, k) =
+            img.at<float>(k / num_cols, k % num_cols);
+        image << training_vectors.at<float>(index, k) << std::endl;
+      }
+      training_labels.at<float>(index, 0) = i;
+      label << i << std::endl;
+    }
+  }
+  knn->setDefaultK(K);
+  knn->setIsClassifier(true);
+  knn->setAlgorithmType(ml::KNearest::BRUTE_FORCE);
+  knn->train(training_vectors, ml::ROW_SAMPLE, training_labels);
+  // knn->save("identify.model");
 }
 
 #if Debug

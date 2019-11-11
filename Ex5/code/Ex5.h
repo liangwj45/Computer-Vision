@@ -1,62 +1,98 @@
-#ifndef _Ex5_
+ï»¿#ifndef _Ex5_
 #define _Ex5_
 #include <list>
 #include <map>
+#include <set>
 #include <string>
+#include <vector>
 #include "CImg.h"
+#include "Identify.h"
 using std::list;
 using std::map;
+using std::set;
 using std::string;
+using std::vector;
 using namespace cimg_library;
 
 class Ex5 {
  public:
-  Ex5(string path);
-  void test();
-
-  struct Point {
-    int x, y;
-    Point(int x = 0, int y = 0) : x(x), y(y) {}
-  };
+  Ex5(string path, string name);
+  ~Ex5();
+  void test(int tcon, int tnum, int tdiv);
 
   struct Rectangle {
-    int lx, rx, ly, ry;
+    int lx, ly, rx, ry, width, height, area;
+    Rectangle(int lx = 0, int ly = 0, int rx = 0, int ry = 0, int width = 0,
+              int height = 0, int area = 0);
   };
 
- private:           // Part1
-  void Devision();  // Í¼Ïñ·Ö¸î
+  struct Bracket {
+    int lx, rx, y, mid;
+    float value;
+    Bracket(int lx = 0, int rx = 0, int y = 0, int mid = 0);
+  };
 
- private:  // Part2
-  void Erosion(CImg<unsigned char> in, CImg<unsigned char>& out,
-               int n);  // ¸¯Ê´
-  void Dilation(CImg<unsigned char> in, CImg<unsigned char>& out,
-                int n);               // ÅòÕÍ
-  void EliminateConnection();         // Ïû³ıÁ¬Í¨¿é
-  void FindConnection(int x, int y);  // Ñ°ÕÒÁ¬Í¨¿é
-  void DeleteConnection();            // É¾³ıÁ¬Í¨¿é
-  void DrawLine(CImg<unsigned char>& img, int bx, int by, int ex, int ey,
-                unsigned char* color, int n);  // »­ÏßÌõ
-
- private:                                         // Part3
-  void FindScaleplate(CImg<unsigned char>& img);  // ÕÒ¿Ì¶È³ß
-  void DrawScaleplate();                          // »­¿Ì¶È³ß
+  struct Num {
+    Rectangle rec;
+    vector<Rectangle> nums;
+    Num() {}
+  };
 
  private:
-  CImg<unsigned char> src;  // Ô­Í¼
+  void Devision(int tdiv);                        // å›¾åƒåˆ†å‰²
+  void EliminateConnection(int tcon, int tnum);   // æ¶ˆé™¤è¿é€šå—
+  void FindConnection(int x, int y);              // å¯»æ‰¾è¿é€šå—
+  void DeleteConnection();                        // åˆ é™¤è¿é€šå—
+  void FindScaleplate(CImg<unsigned char>& img);  // æ‰¾åˆ»åº¦å°º
+  void DrawScaleplate();                          // ç”»åˆ»åº¦å°º
+  void Erosion(CImg<unsigned char> in, CImg<unsigned char>& out,
+               int n);  // è…èš€
+  void Dilation(CImg<unsigned char> in, CImg<unsigned char>& out,
+                int n);  // è†¨èƒ€
+  void DrawLine(CImg<unsigned char>& img, int bx, int by, int ex, int ey,
+                unsigned char* color, int n);  // ç”»çº¿æ¡
+  void SubImage(const Rectangle& rec, CImg<unsigned char>& out);
+  void DrawRectangle(const Rectangle& rec, unsigned char* color = red);
+  void DrawRectangle(int lx, int ly, int rx, int ry,
+                     unsigned char* color = red);
+  void FindNumberAreas();
+  void Summary();
+  void IdentifyNumber();
+  void FindBracket();
+  void ComputeCoordinate();
+  float Calculate(int x);
+
+ private:
   CImg<unsigned char> img;
-  CImg<unsigned char> tmp;
-  int width;             // Í¼Ïñ¿í¶È
-  int height;            // Í¼Ïñ¸ß¶È
-  int cnt;               // ¼ÇÂ¼Á¬Í¨¿éÖĞÏñËØ¸öÊı
-  int lx, rx, ly, ry;    // ¼ÇÂ¼Á¬Í¨¿éµÄ±ß½ç
-  int bx, ex, by, ey;    // ¼ÇÂ¼¿Ì¶È³ßµÄ±ß½ç
-  int con[5000][2];      // ¼ÇÂ¼Á¬Í¨¿éÎ»ÖÃ
-  CImg<bool> vis;        // ¼ÇÂ¼ÊÇ·ñÒÑ¾­±éÀú
-  static int dir[8][2];  // °Ë¸öÒÆ¶¯·½Ïò
-  static unsigned char red[3];
-  static unsigned char blue[3];
-  int tcon;
-  int tnum;
+  CImg<unsigned char> src;  // åŸå›¾
+  CImg<unsigned char> div;
+  CImg<unsigned char> result;  // ç»“æœå›¾
+  string name;                 // åŸå›¾åç§°
+  int width, height;           // å›¾åƒå®½åº¦å’Œé«˜åº¦
+  int lx, rx, ly, ry;          // è®°å½•è¿é€šå—çš„è¾¹ç•Œ
+  int bx, ex, by, ey;          // è®°å½•åˆ»åº¦å°ºçš„è¾¹ç•Œ
+  int cbx, cex;
+  int clx, crx, cy;
+  bool* vis;              // è®°å½•æ˜¯å¦å·²ç»éå†
+  int* con;               // è®°å½•è¿é€šå—åƒç´ ä½ç½®
+  vector<Rectangle> rec;  // è®°å½•è¿é€šå—çŸ©å½¢ä½ç½®
+  int cnt_con;            // è®°å½•è¿é€šå—ä¸­åƒç´ ä¸ªæ•°
+  int cnt_rec;            // è®°å½•è¿é€šå—çŸ©å½¢çš„ä¸ªæ•°
+  vector<std::pair<int, int>> cnt_area;
+  set<int> set_area;
+  Rectangle up, down;
+  map<int, vector<Rectangle>> up_rec;
+  map<int, vector<Rectangle>> down_rec;
+  map<int, vector<Rectangle>> ruler_rec;
+  vector<Bracket> brackets;
+  vector<Rectangle> bracket_nums;
+  Identify identify;
+
+ private:
+  static int dir[8][2];           // å…«ä¸ªç§»åŠ¨æ–¹å‘
+  static unsigned char red[3];    // çº¢è‰²åƒç´ å€¼
+  static unsigned char blue[3];   // è“è‰²åƒç´ å€¼
+  static unsigned char green[3];  // ç»¿è‰²åƒç´ å€¼
 };
 
 #endif

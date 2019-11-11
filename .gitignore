@@ -3,3 +3,4 @@ Debug/
 .vscode/
 *.exe
 tmp/
+x64/

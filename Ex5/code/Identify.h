@@ -1,4 +1,4 @@
-#ifndef _Ex5_Identify_
+﻿#ifndef _Ex5_Identify_
 #define _Ex5_Identify_
 #define Debug 0
 #include <fstream>
@@ -9,17 +9,18 @@ using namespace cimg_library;
 using namespace cv;
 using std::ifstream;
 using std::ofstream;
+using std::string;
 
 class Identify {
  public:
-  Identify(bool has_image = false);
+  Identify(bool has_model = true);
   void Predict(Mat& test, Mat& result);
-  float Predict(Mat& test);
+  float Predict(string path);
+  float Predict(CImg<unsigned char>& img);
 
  private:
-  void ImportTrainingImages();
-  void LoadImagesAndLabels();
-  void DoTraining();
+  void ImportTrainingModel();
+  void LoadDataAndDoTraining();
 
 #if Debug
   void ImportTestingImages();
