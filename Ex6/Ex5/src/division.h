@@ -29,7 +29,7 @@ class Division {
         : lx(lx), ly(ly), rx(rx), ry(ry), area((ry - ly) * (rx - lx)) {}
   };
 
-  void Binaryzation(CIMG& img, int tbin);                   // 二值化
+  CIMG Binaryzation(CIMG& img, int tbin);                   // 二值化
   void Eroding(CIMG in, CIMG& out, int n);                  // 腐蚀
   void Dilating(CIMG in, CIMG& out, int n);                 // 膨胀
   void EliminateConnection(CIMG& img, int tcon, int tnum);  // 消除连通块
@@ -40,10 +40,13 @@ class Division {
   void Statistics(unordered_map<int, int> um, set<int>& result, int tsum);
   void SaveNumber(const string& path);
   void Ex5();
+  void DrawRectangle(CIMG& img, const Rectangle& rec, const char* color,
+                     int opacity);
 
  private:
   CIMG src;                   // 原图
   CIMG img;                   // 处理图
+  CIMG bin;                   // 二值化图
   CIMG result;                // 结果图
   string name;                // 原图名称
   int width, height;          // 图像宽度和高度

@@ -31,11 +31,175 @@ Division::Division(string path, string name) : name(name) {
 
 void Division::divide(int tcon, int tnum, int tbin, int tsum,
                       const string& img_path, const string& num_path) {
-  Binaryzation(img, tbin);
+  bin = Binaryzation(img, tbin);
+  bin.save((img_path + name + "_bin" + ".bmp").c_str());
   EliminateConnection(img, tcon, tnum);
   Statistics(tsum);
-  RESAVE("_5-sum");
-  return;
+  Ex5();
+  RESAVE("_ex5");
+}
+
+void Division::Ex5() {
+  cout << "FindNumberArea" << endl;
+
+  // 寻找区域边界
+  int number_size = 30, up_number = 3;
+  Rectangle up(width, height), down(width, height), mid(width, height);
+  for (auto e : recs) {
+    if (e.ly < up.ly) up.ly = e.ly;
+    if (e.ry > down.ry) down.ry = e.ry;
+  }
+  for (auto e : recs) {
+    if (e.ly - up.ly < up_number * number_size) {
+      if (e.lx < up.lx) up.lx = e.lx;
+      if (e.rx > up.rx) up.rx = e.rx;
+      if (e.ry > up.ry) up.ry = e.ry;
+    } else if (down.ry - e.ry < number_size) {
+      if (e.lx < down.lx) down.lx = e.lx;
+      if (e.ly < down.ly) down.ly = e.ly;
+      if (e.rx > down.rx) down.rx = e.rx;
+    } else if (down.ry - e.ry < 10 * number_size) {
+      if (e.lx < mid.lx) mid.lx = e.lx;
+      if (e.ly < mid.ly) mid.ly = e.ly;
+      if (e.rx > mid.rx) mid.rx = e.rx;
+      if (e.ry > mid.ry) mid.ry = e.ry;
+    }
+  }
+  // MarkRectangle(result, up.lx, up.ly, up.rx, up.ry, red);
+  // MarkRectangle(result, mid.lx, mid.ly, mid.rx, mid.ry, red);
+  // MarkRectangle(result, down.lx, down.ly, down.rx, down.ry, red);
+
+  // 将数字连通块归类
+  vector<Rectangle> up_rec, mid_rec, down_rec;
+  for (auto e : recs) {
+    if (e.lx >= up.lx && e.ly >= up.ly && e.rx <= up.rx && e.ry <= up.ry) {
+      up_rec.push_back(e);
+    } else if (e.lx >= mid.lx && e.ly >= mid.ly && e.rx <= mid.rx &&
+               e.ry <= mid.ry) {
+      mid_rec.push_back(e);
+    } else if (e.lx >= down.lx && e.ly >= down.ly && e.rx <= down.rx &&
+               e.ry <= down.ry) {
+      down_rec.push_back(e);
+    }
+  }
+  std::sort(up_rec.begin(), up_rec.end(),
+            [](const Rectangle& a, const Rectangle& b) { return a.lx < b.lx; });
+  std::sort(mid_rec.begin(), mid_rec.end(),
+            [](const Rectangle& a, const Rectangle& b) { return a.lx < b.lx; });
+  std::sort(down_rec.begin(), down_rec.end(),
+            [](const Rectangle& a, const Rectangle& b) { return a.lx < b.lx; });
+
+  // 寻找并标记数字（带小数点）
+  int up_height = up.ry - up.ly;
+  int up_width = up_rec[0].rx - up_rec[0].lx;
+  int mid_height = mid.ry - mid.ly;
+  int mid_width = mid_rec[0].rx - mid_rec[0].lx;
+  int down_height = down.ry - down.ly;
+  int down_width;
+  if (down_rec[1].lx - down_rec[0].lx > number_size * 2) {
+    down_width = down_rec[2].rx - down_rec[1].lx;
+  } else {
+    down_width = down_rec[1].rx - down_rec[0].lx;
+  }
+  for (int i = 0; i < up_rec.size(); i++) {
+    if (i == 0 || up_rec[i].lx - up_rec[i - 1].lx > up_width) {
+      result.draw_rectangle(up_rec[i].lx, up.ly, up_rec[i].lx + up_width, up.ry,
+                            red, 0.5);
+    }
+  }
+  for (int i = 0; i < mid_rec.size(); i++) {
+    if (i == 0 || mid_rec[i].lx - mid_rec[i - 1].lx > mid_width) {
+      result.draw_rectangle(mid_rec[i].lx, mid.ly, mid_rec[i].lx + mid_width,
+                            mid.ry, blue, 0.5);
+    }
+  }
+  for (int i = 0; i < down_rec.size() - 1; i++) {
+    if (i == 0 || down_rec[i].lx - down_rec[i - 1].lx > down_width) {
+      if (down_rec[i + 1].lx - down_rec[i].lx > down_width) {
+        result.draw_rectangle(down_rec[i].rx - down_width, down.ly,
+                              down_rec[i].rx, down.ry, green, 0.5);
+      } else {
+        result.draw_rectangle(down_rec[i].lx, down.ly,
+                              down_rec[i].lx + down_width, down.ry, green, 0.5);
+      }
+    }
+  }
+
+  cout << "FindBrackets" << endl;
+  int up_y, mid_y, down_y, x, y, cnt;
+  int max1 = 0, max1_y = 0;
+  int max2 = 0, max2_y = 0;
+  for (y = 0; y < height; y++) {
+    cnt = 0;
+    for (x = 0; x < width; x++) {
+      cnt += (bin(x, y) == 0);
+    }
+    if (cnt > max2 && abs(y - max1_y) > 5 && abs(y - max2_y) > 5) {
+      max2 = cnt;
+      max2_y = y;
+      if (max2 > max1) {
+        std::swap(max1, max2);
+        std::swap(max1_y, max2_y);
+      }
+    }
+  }
+
+  // 寻找括号的纵坐标
+  int by = 0, max = 0;
+  for (y = max2_y + 5; y < mid.ly - 5; y++) {
+    cnt = 0;
+    for (x = 0; x < width; x++) {
+      cnt += (bin(x, y) == 0);
+    }
+    if (cnt > max) {
+      max = cnt;
+      by = y;
+    }
+  }
+
+  // 寻找左端点
+  x = 0;
+  while (bin(x, by - 1) || bin(x, by - 2) || bin(x, by - 3)) x++;
+  while (!bin(x, by - 1) && !bin(x, by - 2) && !bin(x, by - 3)) x++;
+  int lx = --x, mid_x = 0;
+  cnt = 0;
+  while (x < width) {
+    x++;
+    // 确定中点
+    if (bin(x, by - 1) && bin(x, by - 2) && bin(x, by - 3) && !bin(x, by + 1) &&
+        !bin(x, by + 2) && !bin(x, by + 3))
+      mid_x = x;
+    // 确定右端点
+    if (!bin(x, by - 1) && !bin(x, by - 2) && !bin(x, by - 3)) {
+      if (!mid_x) {
+        // 该右端点实际上是一个左端点
+        while (!bin(x, by - 1) && !bin(x, by - 2) && !bin(x, by - 3)) x++;
+        lx = --x, mid_x = 0;
+      } else {
+        // 标记括号
+        result.draw_line(lx, by - 3, x, by - 3, green);
+        result.draw_line(lx, by - 3, lx, by, green);
+        result.draw_line(lx, by, x, by, green);
+        result.draw_line(x, by - 3, x, by, green);
+        printf("Bracket%d: %d %d %d\n", ++cnt, lx, mid_x, x);
+        while (!bin(x, by - 1) && !bin(x, by - 2) && !bin(x, by - 3)) x++;
+        // 判断括号是否相连
+        if (!bin(x, by) && !bin(x + 1, by) && !bin(x + 2, by)) {
+          lx = --x, mid_x = 0;
+        } else {
+          // 寻找左端点
+          while (bin(x, by - 1) || bin(x, by - 2) || bin(x, by - 3)) x++;
+          while (!bin(x, by - 1) && !bin(x, by - 2) && !bin(x, by - 3)) x++;
+          lx = --x, mid_x = 0;
+        }
+      }
+    }
+  }
+}
+
+void Division::DrawRectangle(CIMG& img, const Rectangle& rec, const char* color,
+                             int opacity) {
+  img.draw_rectangle(rec.lx, rec.ly, rec.rx, rec.ry, color, opacity);
 }
 
 // 消除过大或过小连通块并记录有效连通块
@@ -92,7 +256,7 @@ void Division::EliminateConnection(CIMG& img, int tcon, int tnum) {
 }
 
 // 二值化处理
-void Division::Binaryzation(CIMG& img, int tbin) {
+CIMG Division::Binaryzation(CIMG& img, int tbin) {
   cout << "Binaryzation" << endl;
   if (tbin == 0) {
     int cnt[256], m1 = 0, m2 = 0, min, i, j;
@@ -124,6 +288,7 @@ void Division::Binaryzation(CIMG& img, int tbin) {
   }
   // 二值化
   cimg_forXY(img, x, y) { img(x, y) = img(x, y) < tbin ? 0 : 255; }
+  return img;
 }
 
 // 腐蚀
@@ -198,10 +363,8 @@ void Division::Statistics(unordered_map<int, int> um, set<int>& result,
   }
   while (!heap.empty()) {
     result.insert(heap.top().first);
-    // printf("%d ", heap.top().first);
     heap.pop();
   }
-  // puts("");
 }
 
 // 统计位置信息
@@ -231,7 +394,7 @@ void Division::Statistics(int tsum) {
     }
   }
   printf("amount of number: %d\n", recs.size());
-  for (auto e : recs) {
-    MarkRectangle(result, e.lx, e.ly, e.rx, e.ry, red);
-  }
+  // for (auto e : recs) {
+  //  MarkRectangle(result, e.lx, e.ly, e.rx, e.ry, red);
+  //}
 }
