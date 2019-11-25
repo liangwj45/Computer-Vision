@@ -679,26 +679,26 @@ void Division::Ex5() {
 
 实验随机选择了11张图片进行测试，以下是处理的结果。
 
-![1_ex5](./Ex5/src/output/1_ex5.bmp)
+![1_ex5](./Ex5_tasks/src/output/1_ex5.bmp)
 
-![2_ex5](./Ex5/src/output/2_ex5.bmp)
+![2_ex5](./Ex5_tasks/src/output/2_ex5.bmp)
 
-![3_ex5](./Ex5/src/output/3_ex5.bmp)
+![3_ex5](./Ex5_tasks/src/output/3_ex5.bmp)
 
-![4_ex5](./Ex5/src/output/4_ex5.bmp)
+![4_ex5](./Ex5_tasks/src/output/4_ex5.bmp)
 
-![5_ex5](./Ex5/src/output/5_ex5.bmp)
+![5_ex5](./Ex5_tasks/src/output/5_ex5.bmp)
 
-![6_ex5](./Ex5/src/output/6_ex5.bmp)
+![6_ex5](./Ex5_tasks/src/output/6_ex5.bmp)
 
-![7_ex5](./Ex5/src/output/7_ex5.bmp)
+![7_ex5](./Ex5_tasks/src/output/7_ex5.bmp)
 
-![8_ex5](./Ex5/src/output/8_ex5.bmp)
+![8_ex5](./Ex5_tasks/src/output/8_ex5.bmp)
 
-![9_ex5](./Ex5/src/output/9_ex5.bmp)
+![9_ex5](./Ex5_tasks/src/output/9_ex5.bmp)
 
-![10_ex5](./Ex5/src/output/10_ex5.bmp)
+![10_ex5](./Ex5_tasks/src/output/10_ex5.bmp)
 
-![11_ex5](./Ex5/src/output/11_ex5.bmp)
+![11_ex5](./Ex5_tasks/src/output/11_ex5.bmp)
 
 > 后续操作需要将在数字区域中识别小数点的位置，并按单一数字尺寸提取单一数字并作识别，从而确定整个小数的值。本次作业将上次作业大部分代码进行了重构，但由于时间的关系，剩下的部分就没有接下去实现了。
