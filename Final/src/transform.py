@@ -42,6 +42,7 @@ def sort_peaks(peaks):
 
 # 名片纠正
 def transform():
+    imgs = []
     for i in range(1, 23):
         # 导入图片并调整尺寸
         img = cv2.imread(f'../DataSet/{i}.jpg')
@@ -50,15 +51,15 @@ def transform():
         # 边缘检测
         gray = cv2.GaussianBlur(img, (5, 5), 0)
         edged = cv2.Canny(gray, 80, 230)
-        cv2.imwrite(f'../DataSet/gray_{i}.jpg', gray)
-        cv2.imwrite(f'../DataSet/edged_{i}.jpg', edged)
+        # cv2.imwrite(f'../DataSet/gray_{i}.jpg', gray)
+        # cv2.imwrite(f'../DataSet/edged_{i}.jpg', edged)
 
         # 膨胀/腐蚀
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (19, 19))
         dilation = cv2.dilate(edged, kernel)
         erosion = cv2.erode(dilation, kernel)
-        cv2.imwrite(f'../DataSet/dilation_{i}.jpg', dilation)
-        cv2.imwrite(f'../DataSet/erosion_{i}.jpg', erosion)
+        # cv2.imwrite(f'../DataSet/dilation_{i}.jpg', dilation)
+        # cv2.imwrite(f'../DataSet/erosion_{i}.jpg', erosion)
 
         # 寻找名片轮廓
         src = np.float32(find_contour(erosion)).reshape(-1, 2)
@@ -67,7 +68,7 @@ def transform():
 
             # 确定平面在原图中的顶点位置
             src = sort_peaks(src)
-            save_peaks(img, src, f'../DataSet/peaks_{i}.jpg')
+            # save_peaks(img, src, f'../DataSet/peaks_{i}.jpg')
 
             # 确定纠正后名片的尺寸
             width, height = src[1][0] - src[0][0], src[2][1] - src[0][1]
@@ -78,7 +79,10 @@ def transform():
             m = cv2.getPerspectiveTransform(src, dst)
             result = cv2.warpPerspective(img, m, (width, height))
             result = cv2.resize(result, (530, 340), 0, 0, cv2.INTER_LINEAR)
-            cv2.imwrite(f'../Dataset/result_{i}.jpg', result)
+            # cv2.imwrite(f'../Dataset/result_{i}.jpg', result)
+            imgs.append(result)
+
+    return imgs
 
 
 if __name__ == "__main__":

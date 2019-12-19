@@ -131,12 +131,12 @@ def identify_company(img):
     return None
 
 
-def identify():
+def identify(imgs):
     with open('./records.csv', 'w', encoding='utf-8') as rec:
         rec.write('图片编号,姓名,公司,电话\n')
-        for i in range(1, 20):
+        for i in range(len(imgs)):
             print(">>>>>>>>>", i)
-            img = cv2.imread(f'../cards/{i}.jpg')
+            img = imgs[i]
 
             # 二值化
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -170,4 +170,8 @@ def identify():
 
 if __name__ == "__main__":
     # rename('../cards')
-    identify()
+    imgs = []
+    for i in range(20):
+        img = cv2.imread(f'../cards/{i}.jpg')
+        imgs.append(img)
+    identify(imgs)
