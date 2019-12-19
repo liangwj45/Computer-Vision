@@ -1,11 +1,74 @@
-from utils import *
+from src.utils import *
+from PIL import Image
+import pytesseract
 import numpy as np
 import imutils
-import re
-import cv2
 import math
-import pytesseract
-from PIL import Image
+import cv2
+import re
+
+
+# 寻找名片轮廓
+def find_contour(edged):
+    # 寻找轮廓
+    cnts = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+
+    # 根据轮廓面积排序
+    cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
+    for c in cnts:
+        peri = cv2.arcLength(c, True)                  # 计算轮廓周长
+        approx = cv2.approxPolyDP(c, 0.02*peri, True)  # 轮廓多边形拟合
+        if len(approx) == 4:  # 如果是四边形就返回
+            return approx
+    return []
+
+
+# 顶点排序
+def sort_peaks(peaks):
+    peaks = peaks[np.lexsort([peaks[:, 1]])]
+    up, down = peaks[:2], peaks[2:]
+    up = peaks[np.lexsort([up[:, 0]])]
+    down = down[np.lexsort([down[:, 0]])]
+    peaks = np.concatenate((up, down))
+    return peaks
+
+
+# 名片纠正
+def transform():
+    imgs = []
+    for i in range(1, 23):
+        # 导入图片并调整尺寸
+        img = cv2.imread(f'./DataSet/{i}.jpg')
+        img = imutils.resize(img, height=500)
+
+        # 边缘检测
+        gray = cv2.GaussianBlur(img, (5, 5), 0)
+        edged = cv2.Canny(gray, 80, 230)
+
+        # 膨胀/腐蚀
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (19, 19))
+        dilation = cv2.dilate(edged, kernel)
+        erosion = cv2.erode(dilation, kernel)
+
+        # 寻找名片轮廓
+        src = np.float32(find_contour(erosion)).reshape(-1, 2)
+        if len(src) > 0:
+            # 确定平面在原图中的顶点位置
+            src = sort_peaks(src)
+
+            # 确定纠正后名片的尺寸
+            width, height = src[1][0] - src[0][0], src[2][1] - src[0][1]
+            dst = np.float32(
+                [[0, 0], [width, 0], [0, height], [width, height]])
+
+            # 名片纠正
+            m = cv2.getPerspectiveTransform(src, dst)
+            result = cv2.warpPerspective(img, m, (width, height))
+            result = cv2.resize(result, (530, 340), 0, 0, cv2.INTER_LINEAR)
+            imgs.append(result)
+
+    return imgs
 
 
 def sub_img(img, cnt):
@@ -21,66 +84,12 @@ def sub_img(img, cnt):
     return img[y:y+h, x:x+w]
 
 
-def save_contours(img, i):
-    cnts = find_contours(img, 21, 3)
-    index = 0
-    for cnt in cnts:
-        sub = sub_img(img, cnt)
-        imsave(sub, f'contour/{i}_{index}')
-        index += 1
-
-
-def save_characters(img, i):
-    cnts = find_contours(img, 5, 3)
-    index = 0
-    for cnt in cnts:
-        # 根据轮廓切割区域
-        sub = sub_img(img, cnt)
-
-        # 统计垂直投影像素个数
-        pixs = np.zeros(sub.shape[1], np.uint8)
-        for j in range(sub.shape[1]):
-            for k in range(sub.shape[0]):
-                pixs[j] += 1 if sub[k][j] == 255 else 0
-
-        j = 0
-        while j < sub.shape[1]:
-            # 根据垂直投影切割字符
-            while j < sub.shape[1] and pixs[j] == 0:
-                j += 1
-            if j >= sub.shape[1]:
-                break
-            left = j
-            while j < sub.shape[1] and pixs[j] != 0:
-                j += 1
-            right = j
-
-            if right - left > 1:
-                if left > 0:
-                    left = left - 1
-                if right < sub.shape[1]:
-                    right = right + 1
-                sigle = sub[:, left-1:right+1]
-                # 保存字符
-                if sigle.shape[0] > 5 and sigle.shape[1] > 5 and sigle.shape[0] > 10 or sigle.shape[1] > 10:
-                    imsave(sigle, f'num/{i}_{index}')
-                    index += 1
-
-
 def find_contours(img, w, h):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (w, h))
     dialtion = cv2.dilate(img, kernel)
     cnts = cv2.findContours(dialtion, cv2.RETR_EXTERNAL,
                             cv2.CHAIN_APPROX_SIMPLE)
     return cnts[0] if imutils.is_cv2() else cnts[1]
-
-
-def draw_contours(img, cnts, tag):
-    seg = img.copy()
-    for cnt in cnts:
-        x, y, w, h = cv2.boundingRect(cnt)
-        cv2.rectangle(seg, (x, y), (x + w, y + h), blue, 1)
-    imsave(seg, tag)
 
 
 def identify_phone(img):
@@ -131,12 +140,12 @@ def identify_company(img):
     return None
 
 
-def identify():
+def identify(imgs):
     with open('./records.csv', 'w', encoding='utf-8') as rec:
         rec.write('图片编号,姓名,公司,电话\n')
-        for i in range(1, 20):
+        for i in range(len(imgs)):
             print(">>>>>>>>>", i)
-            img = cv2.imread(f'../cards/{i}.jpg')
+            img = imgs[i]
 
             # 二值化
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -169,5 +178,6 @@ def identify():
 
 
 if __name__ == "__main__":
-    # rename('../cards')
-    identify()
+    rename('./test')
+    imgs = transform()
+    identify(imgs)

@@ -4,14 +4,6 @@ import imutils
 import cv2
 
 
-# 展示图片
-def imshow(name, img):
-    # cv2.namedWindow(name, cv2.WINDOW_NORMAL)
-    cv2.imshow(name, img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
 # 寻找名片轮廓
 def find_contour(edged):
     # 寻找轮廓
@@ -61,8 +53,15 @@ def transform():
         cv2.imwrite(f'../DataSet/gray_{i}.jpg', gray)
         cv2.imwrite(f'../DataSet/edged_{i}.jpg', edged)
 
+        # 膨胀/腐蚀
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (19, 19))
+        dilation = cv2.dilate(edged, kernel)
+        erosion = cv2.erode(dilation, kernel)
+        cv2.imwrite(f'../DataSet/dilation_{i}.jpg', dilation)
+        cv2.imwrite(f'../DataSet/erosion_{i}.jpg', erosion)
+
         # 寻找名片轮廓
-        src = np.float32(find_contour(edged)).reshape(-1, 2)
+        src = np.float32(find_contour(erosion)).reshape(-1, 2)
         if len(src) > 0:
             print(f'picture{i}')
 
@@ -78,6 +77,7 @@ def transform():
             # 名片纠正
             m = cv2.getPerspectiveTransform(src, dst)
             result = cv2.warpPerspective(img, m, (width, height))
+            result = cv2.resize(result, (530, 340), 0, 0, cv2.INTER_LINEAR)
             cv2.imwrite(f'../Dataset/result_{i}.jpg', result)
 
 
