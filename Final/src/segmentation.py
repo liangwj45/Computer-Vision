@@ -169,8 +169,8 @@ def identify(imgs):
                 gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 9, 5)
 
             # 获取横向膨胀后的图像轮廓
-            cnts = find_contours(bin, 5, 3)
             con = bin.copy()
+            cnts = find_contours(bin, 5, 3)
             for cnt in cnts:
                 area = cv2.contourArea(cnt)
                 # 删除面积小于80的连通块
